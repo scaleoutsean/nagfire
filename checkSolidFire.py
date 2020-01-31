@@ -18,7 +18,7 @@ import re
 import textwrap
 import time
 
-version = "2.0 2020/01/31"
+version = "v2.0 2020/01/31"
 
 murl = "/json-rpc/11.0"
 
@@ -224,7 +224,7 @@ if ipType == 'node':
 
     if sys.stdout.isatty():
         print(("+" + "-"*63 + "+"))
-        print(("| SolidFire Monitoring Plugin " + version + "|".rjust(21)))
+        print(("| SolidFire Monitoring Plugin " + version + "|".rjust(20)))
         print(("+" + "-"*63 + "+"))
         prettyPrint("Node Status", clusterState, 60)
         prettyPrint("Cluster Name", clusterName, 60)
@@ -326,7 +326,7 @@ elif ipType == 'mvip':
     # check to see if we are being called from a terminal
     if sys.stdout.isatty():
         print(("+" + "-"*63 + "+"))
-        print(("| SolidFire Monitoring Plugin v" + version + "|".rjust(20)))
+        print(("| SolidFire Monitoring Plugin " + version + "|".rjust(20)))
         print(("+" + "-"*63 + "+"))
         prettyPrint("Cluster", ip, 60)
         prettyPrint("Version", str(clusterVersion), 60)

@@ -62,7 +62,7 @@ $ python3 checkSolidFire.py 192.168.1.30 443 admin admin mvip
 
 $ python3 checkSolidFire.py 192.168.1.29 442 admin admin node
 +---------------------------------------------------------------+
-| SolidFire Monitoring Plugin 2.0 2020/01/31                    |
+| SolidFire Monitoring Plugin v2.0 2020/01/31                   |
 +---------------------------------------------------------------+
 | Node Status                    | Active                       |
 | Cluster Name                   | taiwan                       |
