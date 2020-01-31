@@ -85,7 +85,8 @@ $ python3 checkSolidFire.py 192.168.1.29 442 admin admin node
   - Use Element API endpoint v11
   - Lower maximum session count (needs validation, may need to be increased for larger clusters)
 
-## License
+## License and Trademarks
 
-See LICENSE file.
+See the LICENSE file.
 
+NetApp, SolidFire, and the marks listed at www.netapp.com/TM are trademarks of NetApp, Inc.
