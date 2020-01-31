@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 # author: Joe McManus joe.mcmanus@solidfire.com, scaleoutSean
 # file: checkClusterApi.py
-# version: 2.0b 2020/01/31
+# version: 2.0 2020/01/31
 # use: Query SolidFire and NetApp HCI clusters and nodes to feed to Nagios, or stand-alone command line
 # coding: utf-8
 import requests
+from requests.packages.urllib3.exceptions import InsecureRequestWarning
+requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 import base64
 import json
 import sys
@@ -16,7 +18,7 @@ import re
 import textwrap
 import time
 
-version = "2.0b 2020/01/31"
+version = "2.0 2020/01/31"
 
 murl = "/json-rpc/11.0"
 
@@ -194,11 +196,11 @@ if ipCheck(ip) == False:
     checkName(ip)
 
 if ipType == 'node':
-    jsonData = json.dumps({"method": "GetClusterState", "params": { "force": "true", "nodeID": "1" }, "id": 1})
+    jsonData = json.dumps({"method": "GetClusterState", "params": {}, "id": 1})
     try:
         response = sendRequest(ip, port, murl, username,
                                password, jsonData, ipType)
-        clusterState = response['state']
+        clusterState = response['result']['state']
     except:
         printUsage("State not found, are you sure this is a node?")
 
@@ -207,12 +209,12 @@ if ipType == 'node':
         clusterMvip = "n/a"
         clusterName = "n/a"
     else:
-        clusterName = response['cluster']
+        clusterName = response['result']['cluster']
         jsonData = json.dumps(
             {"method": "TestConnectMvip", "params": {}, "id": 1})
         response = sendRequest(ip, port, murl, username,
                                password, jsonData, ipType)
-        details = response['details']
+        details = response['result']['details']
         if 'mvip' in details:
             clusterMvip = details['mvip']
             exitStatus = STATE_OK
@@ -222,7 +224,7 @@ if ipType == 'node':
 
     if sys.stdout.isatty():
         print(("+" + "-"*63 + "+"))
-        print(("| SolidFire Monitoring Plugin v." + version + "|".rjust(19)))
+        print(("| SolidFire Monitoring Plugin " + version + "|".rjust(21)))
         print(("+" + "-"*63 + "+"))
         prettyPrint("Node Status", clusterState, 60)
         prettyPrint("Cluster Name", clusterName, 60)
@@ -323,9 +325,9 @@ elif ipType == 'mvip':
 
     # check to see if we are being called from a terminal
     if sys.stdout.isatty():
-        print(("+" + "-"*64 + "+"))
-        print(("| SolidFire Monitoring Plugin v" + version + "|".rjust(19)))
-        print(("+" + "-"*64 + "+"))
+        print(("+" + "-"*63 + "+"))
+        print(("| SolidFire Monitoring Plugin v" + version + "|".rjust(20)))
+        print(("+" + "-"*63 + "+"))
         prettyPrint("Cluster", ip, 60)
         prettyPrint("Version", str(clusterVersion), 60)
         prettyPrint("Disk Activity", diskUse, 60)

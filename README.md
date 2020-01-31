@@ -4,6 +4,8 @@
 
 This is a refreshed, Python 3-based version of an old SolidFire plugin for Nagios (written in Python 2). 
 
+There's a lot of room for improvement because SolidFire has made alot of progress since this plugin was written, but I have no plans to make improvements at this time. The main purpose of this refresh is to provide a starting point to Nagios users who have NetApp HCI or SolidFire and NetApp partners who serve them.
+
 ## Instructions
 
 - Run it with python3: `./checkSolidFire.py (MVIP|MIP) PORT USERNAME PASSWORD (MVIP|NODE)`
@@ -22,8 +24,7 @@ This is a refreshed, Python 3-based version of an old SolidFire plugin for Nagio
 ## Known Issues
 
 - Security: HTTPS certificate validation is disabled. You may edit that out if you need validation to work.
-- Interface: HTTPS certificate validation creates warnings in console output. 
-- Usability: various formulae haven't been updated since v1.7 (Element OS v5). 
+- Usability: various formulae haven't been updated since v1.7 (Element OS v5). Tested limits have generally increased since v5. 
 
 ## Sample CLI Output
 
@@ -32,13 +33,13 @@ This is a refreshed, Python 3-based version of an old SolidFire plugin for Nagio
 ```shell
 $ python3 checkSolidFire.py 192.168.1.30 443 admin admin mvip
 /tmp/cluster-192.168.1.30.txt
-+----------------------------------------------------------------+
-| SolidFire Monitoring Plugin v2.0b 2020/01/31                  |
-+----------------------------------------------------------------+
++---------------------------------------------------------------+
+| SolidFire Monitoring Plugin v2.0 2020/01/31                   |
++---------------------------------------------------------------+
 | Cluster                        | 192.168.1.30                 |
 | Version                        | 11.3.0.14235                 |
-| Disk Activity                  | Yes                          |
-| Read Bytes                     | 114344324608                 |
+| Disk Activity                  | No*                          |
+| Read Bytes                     | 114359578112                 |
 | Write Bytes                    | 309075653120                 |
 | Utilization %                  | 0.0                          |
 | iSCSI Sessions                 | 2                            |
@@ -55,12 +56,27 @@ $ python3 checkSolidFire.py 192.168.1.30 443 admin admin mvip
 |                                | available cluster IOPS.*     |
 | Cluster Name                   | taiwan                       |
 | Ensemble Members               | [192.168.103.29]             |
-| Execution Time                 | Fri Jan 31 02:14:34 2020     |
+| Execution Time                 | Fri Jan 31 13:13:30 2020     |
 | Exit State                     | *Critical                    |
 +---------------------------------------------------------------+
-```
+
+$ python3 checkSolidFire.py 192.168.1.29 442 admin admin node
++---------------------------------------------------------------+
+| SolidFire Monitoring Plugin 2.0 2020/01/31                    |
++---------------------------------------------------------------+
+| Node Status                    | Active                       |
+| Cluster Name                   | taiwan                       |
+| MVIP                           | 192.168.1.30                 |
+| Execution Time                 | Fri Jan 31 13:13:34 2020     |
+| Exit State                     | OK                           |
++---------------------------------------------------------------+
 
 ## Change Log
+
+- v2.0 (2020/01/31)
+  - Fix node checks
+  - Silence shell warnings from unverified HTTPS connections
+  - Tiny formatting change for console output
 
 - v2.0b (2020/01/31)
   - Port v1.17 to Python 3
