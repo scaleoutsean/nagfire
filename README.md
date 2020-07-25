@@ -6,6 +6,8 @@ This is a refreshed, Python 3-based version of an old SolidFire plugin for Nagio
 
 There's a lot of room for improvement because SolidFire has made alot of progress since this plugin was written, but I have no plans to make improvements at this time. The main purpose of this refresh is to provide a starting point to Nagios users who have NetApp HCI or SolidFire and NetApp partners who serve them.
 
+If you're interested in other monitoring integrations for NetApp SolidFire or HCI please check out the monitoring section of [awesome-solidfire](https://github.com/scaleoutsean/awesome-solidfire).
+
 ## Instructions
 
 - Run it with python3: `./checkSolidFire.py (MVIP|MIP) PORT USERNAME PASSWORD (MVIP|NODE)`
