@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # author: Joe McManus joe.mcmanus@solidfire.com, scaleoutSean
 # file: checkClusterApi.py
-# version: 2.0 2020/01/31
+# version: 2.1 2020/09/26
 # use: Query SolidFire and NetApp HCI clusters and nodes to feed to Nagios, or stand-alone command line
 # coding: utf-8
 import requests
@@ -18,7 +18,7 @@ import re
 import textwrap
 import time
 
-version = "v2.0 2020/01/31"
+version = "v2.1 2020/09/26"
 
 murl = "/json-rpc/11.0"
 
@@ -202,7 +202,7 @@ if ipType == 'node':
                                password, jsonData, ipType)
         clusterState = response['result']['state']
     except:
-        printUsage("State not found, are you sure this is a node?")
+        printUsage("State not found, are you sure this is a storage node IP?")
 
     if clusterState != "Active":
         exitStatus = STATE_UNKNOWN
@@ -256,6 +256,15 @@ elif ipType == 'mvip':
     details = response['result']['sessions']
     # print(response['sessions'])
     numSessions = len(details)
+
+    # Get Active Storage Nodes
+    jsonData = json.dumps({"method": "ListActiveNodes", "params": {}, "id": 1})
+    response = sendRequest(ip, port, murl, username, password, jsonData, ipType)
+    details = response['result']['nodes']
+    storageNodeCount = 0
+    for node in range(len(details)):
+        if response['result']['nodes'][node]['role'] == 'Storage':
+            storageNodeCount = storageNodeCount + 1
 
     # Get name and members from GetClusterInfo
     jsonData = json.dumps({"method": "GetClusterInfo", "params": {}, "id": 1})
@@ -314,9 +323,11 @@ elif ipType == 'mvip':
 
     # Element OS v11 has a soft limit of 400 active volumes and 700 active
     #  sessions per node
-    # TODO: maxSessions should probably use (nodeCount - 1), but in 4 node clusters
-    #  that's the same as ensembleCount... Needs testing with larger clusters.
-    maxSessions = int(ensembleCount * 700 * .90)
+    # NOTE: 2-storage SolidFire clusters use virtual Ensemble (Witness) Nodes
+    # I don't have any such cluster to test with but I assume only 
+    # storage nodes have the role 'Storage', which is calculated above
+    # Now one node is deducted from total storage node count to allow for HA
+    maxSessions = int((storageNodeCount-1) * 700 * .90)
     warnSessions = int(maxSessions * .80)
     if checkSessions == 1:
         testResult = rangeCheck(maxSessions, warnSessions, numSessions)

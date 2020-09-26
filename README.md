@@ -23,10 +23,16 @@ If you're interested in other monitoring integrations for NetApp SolidFire or HC
 - Element OS v11+ (NetApp HCI & SolidFire)
 - Python 3.6+
 
-## Known Issues
+## Known Issues and Workarounds
 
+- Usability: Max. iSCSI Session Count used to be calculated as `NumberOfEnsembleNodes * 700 * 90%`. Since Nagfire v2.1, that was changed to `NumberOfActiveNodesWithStorageRole -1) * 700 * 90%`:
+  - Two storage node SolidFire clusters (new since earlier this year) still have 1-3 Ensemble Nodes, but only 1 may be able to provide them (if one node fails)
+  - For larger clusters (3-10 nodes), one node is deducted from active node count so that in the case a node fails, your cluster doesn't end up maxed out in terms of iSCSI sessions, which is probably preferred to old behavior. On 11+ node clusters users would have a bit extra slack and early warning since we already use 90% of the supported maximum of 700
+  - For two-node clusters, maxSessions (with 90% of a 700 session maximum) is 630. If a node fails, you'd end up with 0 active nodes and so this would trigger iSCSI alarms. Since we'd get them anyway (node down, etc.), the new formula makes sense
+  - If you prefer the old behavior or if v2.1 gives you any other problems, please continue to use v2.0 or edit the script
 - Security: HTTPS certificate validation is disabled. You may edit that out if you need validation to work.
-- Usability: various formulae haven't been updated since v1.7 (Element OS v5). Tested limits have generally increased since v5. 
+- Security: since SolidFire v12 you can create a read-only cluster admin. It is strongly recommended to create a 'nagios' account for this application (with only Read role) on SolidFire cluster
+- Usability: various formulae haven't been updated since v1.7 (Element OS v5). Tested limits have generally increased since v5.
 
 ## Sample CLI Output
 
@@ -75,6 +81,9 @@ $ python3 checkSolidFire.py 192.168.1.29 442 admin admin node
 ```
 
 ## Change Log
+
+- v2.1 (2020/09/26)
+  - Change formula for max iSCSI sessions to increase HA and reliability for 2-10 node clusters
 
 - v2.0 (2020/01/31)
   - Fix node checks
